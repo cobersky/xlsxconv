@@ -3,7 +3,6 @@ package xlsxconv
 import (
 	"strconv"
 	"strings"
-	"fmt"
 )
 
 type Cell struct {
@@ -22,7 +21,6 @@ func (this *Cell) GetValue(lib *Lib) interface{} {
 			if index, err := strconv.Atoi(this.V); err == nil && len(lib.Strings) > index {
 				v:=lib.Strings[index]
 				if strings.Index(v, "|") > 0 {
-					fmt.Println("is arr")
 					sArr:=strings.Split(v, "|")
 					arr:=[]interface {}{}
 					for i:=0;i<len(sArr);i++{
