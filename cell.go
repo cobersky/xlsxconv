@@ -1,6 +1,10 @@
 package xlsxconv
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+	"fmt"
+)
 
 type Cell struct {
 	R     string`xml:"r,attr"`
@@ -16,9 +20,25 @@ func (this *Cell) GetValue(lib *Lib) interface{} {
 	if this.value == nil {
 		if this.IsString() {
 			if index, err := strconv.Atoi(this.V); err == nil && len(lib.Strings) > index {
-				this.value = lib.Strings[index]
+				v:=lib.Strings[index]
+				if strings.Index(v, "|") > 0 {
+					fmt.Println("is arr")
+					sArr:=strings.Split(v, "|")
+					arr:=[]interface {}{}
+					for i:=0;i<len(sArr);i++{
+						str:=sArr[i]
+						if num, err := strconv.ParseFloat(str, 64); err != nil {
+							arr=append(arr,str)
+						}else{
+							arr=append(arr,num)
+						}
+					}
+					this.value = arr
+				}else {
+					this.value = v
+				}
 			}else {
-				this.value = this.V
+				this.value=this.V
 			}
 		}else {
 			if num, err := strconv.ParseFloat(this.V, 64); err != nil {
