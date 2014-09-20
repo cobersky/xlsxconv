@@ -12,12 +12,16 @@ func (this *Row) ToMap(head *Head, lib *Lib) (c, s map[string]interface{}) {
 	for _, v := range this.Cells {
 		k := v.R[:len(v.R)-rl]
 		if f, ok := (*head)[k]; ok {
-			if f.ExportClient {
-				c[f.Name] = v.GetValue(lib)
+			t:=v.GetValue(lib)
+			if t!=""{
+				if f.ExportClient {
+					c[f.Name] =t
+				}
+				if f.ExportServer {
+					s[f.Name] = t
+				}
 			}
-			if f.ExportServer {
-				s[f.Name] = v.GetValue(lib)
-			}
+
 		}
 	}
 	return
