@@ -5,6 +5,9 @@ import (
 	"io"
 	"errors"
 	"encoding/xml"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 var cm = map[string]interface{}{}
@@ -17,7 +20,17 @@ type WorkBook struct {
 }
 
 type Lib struct {
-	Strings []string`xml:"si>t"`
+	Strings []LibString`xml:"si"`
+}
+type LibString struct {
+	T string`xml:"t"`
+	RT []string`xml:"r>t"`
+}
+func (this LibString)String()string{
+	if this.T!=""{
+		return this.T
+	}
+	return strings.Join(this.RT,"")
 }
 type SheetInfo struct {
 	Name string`xml:"name,attr"`
@@ -39,10 +52,13 @@ func Parse(filePath string) {
 	workbook.Sheets = map[string]*Sheet{}
 	parseXML(sx.WorkBook, workbook)
 	parseXML(sx.SharedStrings, workbook.Lib)
-	for _, v := range workbook.SheetsInfo {
+	for k, v := range workbook.SheetsInfo {
 		if matches := sheetReg.FindStringSubmatch(v.Name); len(matches) > 0 {
 			s := &Sheet{}
-			parseXML(sx.Sheets[v.Id], s)
+			err:=parseXML(sx.Sheets[strconv.Itoa(k+1)], s)
+			if err!=nil{
+				fmt.Println(err)
+			}
 			workbook.Sheets[matches[1]] = s
 		}
 	}

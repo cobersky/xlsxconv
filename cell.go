@@ -19,7 +19,7 @@ func (this *Cell) GetValue(lib *Lib) interface{} {
 	if this.value == nil {
 		if this.IsString() {
 			if index, err := strconv.Atoi(this.V); err == nil && len(lib.Strings) > index {
-				v:=lib.Strings[index]
+				v:=lib.Strings[index].String()
 				if strings.Index(v, "|") > 0 {
 					sArr:=strings.Split(v, "|")
 					arr:=[]interface {}{}
