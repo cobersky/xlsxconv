@@ -3,6 +3,7 @@ package xlsxconv
 import (
 	"strconv"
 	"strings"
+	"math"
 )
 
 type Cell struct {
@@ -19,16 +20,22 @@ func (this *Cell) GetValue(lib *Lib) interface{} {
 	if this.value == nil {
 		if this.IsString() {
 			if index, err := strconv.Atoi(this.V); err == nil && len(lib.Strings) > index {
-				v:=lib.Strings[index].String()
+				v := lib.Strings[index].String()
 				if strings.Index(v, "|") > 0 {
-					sArr:=strings.Split(v, "|")
-					arr:=[]interface {}{}
-					for i:=0;i<len(sArr);i++{
-						str:=sArr[i]
-						if num, err := strconv.ParseFloat(str, 64); err != nil {
-							arr=append(arr,str)
-						}else{
-							arr=append(arr,num)
+					sArr := strings.Split(v, "|")
+					arr := []interface{}{}
+					for i := 0; i < len(sArr); i++ {
+						str := sArr[i]
+						if len(str) > 0 {
+							if num, err := strconv.ParseFloat(str, 64); err != nil {
+								arr = append(arr, str)
+							}else {
+								if num == math.Floor(num) {
+									arr = append(arr, int(num))
+								}else {
+									arr = append(arr, num)
+								}
+							}
 						}
 					}
 					this.value = arr
@@ -36,13 +43,17 @@ func (this *Cell) GetValue(lib *Lib) interface{} {
 					this.value = v
 				}
 			}else {
-				this.value=this.V
+				this.value = this.V
 			}
 		}else {
 			if num, err := strconv.ParseFloat(this.V, 64); err != nil {
 				this.value = this.V
 			}else {
-				this.value = num
+				if num == math.Floor(num) {
+					this.value = int(num)
+				}else {
+					this.value = num
+				}
 			}
 		}
 	}
