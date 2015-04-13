@@ -1,7 +1,7 @@
 package main
 
 import (
-	"xlsxconv"
+	"github.com/cobersky/xlsxconv"
 )
 
 func main() {
