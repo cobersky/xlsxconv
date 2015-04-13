@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 	"math"
+	"encoding/json"
 )
 
 type Cell struct {
@@ -15,6 +16,14 @@ type Cell struct {
 
 func (this Cell) IsString() bool {
 	return this.T == "s"
+}
+func tryObjectVal(str string)interface {}{
+	m:=map[string]interface {}{}
+	if json.Unmarshal([]byte(str),&m)==nil{
+		return m
+	}else{
+		return str
+	}
 }
 func (this *Cell) GetValue(lib *Lib) interface{} {
 	if this.value == nil {
@@ -28,7 +37,7 @@ func (this *Cell) GetValue(lib *Lib) interface{} {
 						str := sArr[i]
 						if len(str) > 0 {
 							if num, err := strconv.ParseFloat(str, 64); err != nil {
-								arr = append(arr, str)
+								arr = append(arr, tryObjectVal(str))
 							}else {
 								if num == math.Floor(num) {
 									arr = append(arr, int(num))
@@ -40,7 +49,7 @@ func (this *Cell) GetValue(lib *Lib) interface{} {
 					}
 					this.value = arr
 				}else {
-					this.value = v
+					this.value=tryObjectVal(v)
 				}
 			}else {
 				this.value = this.V
